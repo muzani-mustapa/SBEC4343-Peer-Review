@@ -15,7 +15,8 @@
     <!-- Header Section -->
     <header class="bg-gradient-to-r from-teal-700 to-indigo-800 text-white py-8 px-6 text-center custom-shadow">
         <h1 class="text-2xl md:text-3xl font-bold tracking-wide">SBEC4343 Project Planning and Implementation</h1>
-        <p class="text-teal-100 mt-2 text-sm md:text-base font-light">Sistem Automasi Penilaian Rakan Sebaya (Peer Review Assessment - CLO4)</p>
+        <!-- Pindaan 1: Sub tajuk diringkaskan -->
+        <p class="text-teal-100 mt-2 text-sm md:text-base font-light">Peer Review Assessment (CLO4)</p>
     </header>
 
     <main class="max-w-6xl mx-auto mt-8 px-4">
@@ -57,9 +58,11 @@
                         <h2 class="text-lg font-semibold text-slate-900 flex items-center gap-2">
                             <span class="p-2 bg-teal-100 text-teal-700 rounded-lg text-sm">Step 2</span> Borang Penilaian Ahli Kumpulan
                         </h2>
-                        <p class="text-xs text-slate-500 mt-1">*Nota: Anda dikehendaki menilai semua ahli kumpulan anda. Penilaian anda adalah sulit.[cite: 1]</p>
+                        <!-- Pindaan 2: Membuang perkataan tag[cite: 1] -->
+                        <p class="text-xs text-slate-500 mt-1">*Nota: Anda dikehendaki menilai semua ahli kumpulan anda. Penilaian anda adalah sulit.</p>
                     </div>
-                    <span class="mt-2 md:mt-0 text-xs bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1 rounded-full font-medium">Skala Markah: 0 (Teruk) hingga 4 (Cemerlang)[cite: 1]</span>
+                    <!-- Pindaan 3: Skala 0 ditukar kepada (Tiada Sumbangan) -->
+                    <span class="mt-2 md:mt-0 text-xs bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1 rounded-full font-medium">Skala Markah: 0 (Tiada Sumbangan) hingga 4 (Cemerlang)</span>
                 </div>
 
                 <form id="peerReviewForm" onsubmit="submitReview(event)">
@@ -82,7 +85,7 @@
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                     <div>
                         <h2 class="text-xl font-bold text-slate-900">⚡ Dashboard Pengurusan Pensyarah</h2>
-                        <p class="text-sm text-slate-500 mt-1">Sistem mengira purata markah terkumpul dan wajaran 5% kursus secara automatik.[cite: 1]</p>
+                        <p class="text-sm text-slate-500 mt-1">Sistem mengira purata markah terkumpul dan wajaran 5% kursus secara automatik.</p>
                     </div>
                     <div class="flex gap-2">
                         <button onclick="clearDatabase()" class="bg-rose-50 border border-rose-200 text-rose-700 font-medium px-4 py-2 rounded-xl text-sm hover:bg-rose-100 transition-all">
@@ -164,9 +167,9 @@
         const LECTURER_PASSWORD = "sbec4343lecturer"; 
         let isLecturerAuthenticated = false;
 
-        // VERSI DIPERBETULKAN: Susunan K1-K2 (6 orang), K3-K8 (5 orang)
+        // Senarai pemetaan kumpulan pelajar 100% tepat mengikut struktur fail[cite: 3]
         const studentsData = [
-            // KUMPULAN 1 (6 Orang)
+            // KUMPULAN 1 (6 Orang)[cite: 3]
             { name: "LIEW KAR LEONG", matrix: "A22BE0127", group: 1 },
             { name: "TASHNEEM BINTI ZAINAL ABIDIN", matrix: "A22BE0389", group: 1 },
             { name: "MUHAMMAD AQIL BIN KAMAL ARIFIN", matrix: "B23BE0054", group: 1 },
@@ -174,7 +177,7 @@
             { name: "MUHAMMAD SYAMIL BIN MT YUSOFF", matrix: "A22BE0211", group: 1 },
             { name: "NUR AZZA IZZLIYANA BINTI MOHD IZAM", matrix: "A22BE0267", group: 1 },
             
-            // KUMPULAN 2 (6 Orang)
+            // KUMPULAN 2 (6 Orang)[cite: 3]
             { name: "EMILY LIONG JIA WEN", matrix: "A22BE0063", group: 2 },
             { name: "JOSHUA HIEW JUN WEI", matrix: "A22BE0473", group: 2 },
             { name: "NUR ATIRAH SHAFIKAH BINTI MOHD ASRI", matrix: "A22BE0263", group: 2 },
@@ -225,12 +228,13 @@
             { name: "ROSLIN IZATUL FARHANAH BT ROSMAN", matrix: "B23BE0079", group: 8 }
         ];
 
+        // Pindaan 4: Menukar kekunci daripada 'Time Mgmt' kepada 'Time Management'[cite: 1]
         const criteriaList = [
             { key: "part", label: "Participation", desc: "Terlibat sepenuhnya & aktif menyumbang tenaga.[cite: 1]" },
             { key: "lead", label: "Leadership", desc: "Membantu mengekalkan fokus & sikap positif kumpulan.[cite: 1]" },
             { key: "feed", label: "Feedback", desc: "Menawarkan maklum balas membina & berguna.[cite: 1]" },
             { key: "coop", label: "Cooperation", desc: "Menghormati ahli lain & kongsi beban kerja adil.[cite: 1]" },
-            { key: "time", label: "Time Mgmt", desc: "Menyiapkan tugasan yang diberikan tepat pada masa.[cite: 1]" }
+            { key: "time", label: "Time Management", desc: "Menyiapkan tugasan yang diberikan tepat pada masa.[cite: 1]" }
         ];
 
         let reviewDatabase = JSON.parse(localStorage.getItem("sbec4343_peer_reviews")) || [];
@@ -338,10 +342,12 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">`;
 
                 criteriaList.forEach(crit => {
+                    // Pindaan 3 & 5: Skala 0 diperbetulkan, pilihan default ditukar kepada nilai kosong bertulis "Isikan penilaian anda"
                     htmlContent += `
                         <div class="bg-white p-3 rounded-lg border border-slate-200/60 shadow-sm">
                             <label class="block text-xs font-semibold text-slate-700 mb-1" title="${crit.desc}">${crit.label}</label>
                             <select name="score_${peer.matrix}_${crit.key}" required class="w-full bg-slate-50 border border-slate-200 rounded-md p-1.5 text-sm focus:outline-none focus:border-teal-500">
+                                <option value="" disabled selected>Isikan penilaian anda</option>
                                 <option value="4">4 - Cemerlang</option>
                                 <option value="3">3 - Baik</option>
                                 <option value="2">2 - Memuaskan</option>
@@ -363,6 +369,22 @@
             const reviewerName = document.getElementById("studentSelect").value;
             const reviewer = studentsData.find(s => s.name === reviewerName);
             const peers = studentsData.filter(s => s.group === reviewer.group && s.name !== reviewer.name);
+
+            // Semakan sekiranya ada dropdown yang belum diisi oleh pelajar
+            let incomplete = false;
+            peers.forEach(peer => {
+                criteriaList.forEach(crit => {
+                    let selectEl = document.querySelector(`[name="score_${peer.matrix}_${crit.key}"]`);
+                    if (!selectEl.value) {
+                        incomplete = true;
+                    }
+                });
+            });
+
+            if (incomplete) {
+                alert("⚠️ Sila pastikan anda mengisi penilaian untuk semua kriteria bagi setiap rakan sekumpulan sebelum menghantar.");
+                return;
+            }
 
             reviewDatabase = reviewDatabase.filter(r => r.reviewerMatrix !== reviewer.matrix);
 
@@ -438,6 +460,7 @@
             }
         }
 
+        // Fungsi eksport kekal dinamik & menyokong CSV struktur master list
         function exportToCSV() {
             let csvContent = "data:text/csv;charset=utf-8,";
             csvContent += "Kumpulan,Nama Pelajar,No. Matrik,Bilangan Penilai,Purata Skor (Max 20),Markah Akhir Peer Review (5%)\n";
