@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBEC4343 Peer Review Assessment</title>
+    <!-- Tailwind CSS untuk reka bentuk premium -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .custom-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 10px -1px rgba(0, 0, 0, 0.03); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen pb-12">
+
+    <!-- Header Section -->
+    <header class="bg-gradient-to-r from-teal-700 to-indigo-800 text-white py-8 px-6 text-center custom-shadow">
+        <h1 class="text-2xl md:text-3xl font-bold tracking-wide">SBEC4343 Project Planning and Implementation</h1>
+        <!-- Pindaan 1: Sub tajuk diringkaskan -->
+        <p class="text-teal-100 mt-2 text-sm md:text-base font-light">Peer Review Assessment (CLO4)</p>
+    </header>
+
+    <main class="max-w-6xl mx-auto mt-8 px-4">
+        <!-- Tab Navigation -->
+        <div class="flex border-b border-slate-200 mb-6 bg-white p-2 rounded-xl custom-shadow">
+            <button id="tabStudentBtn" onclick="switchTab('student')" class="flex-1 py-3 text-center font-medium rounded-lg text-teal-700 bg-teal-50 border-b-2 border-teal-600 transition-all">
+                👤 Portal Pelajar (Isi Peer Review)
+            </button>
+            <button id="tabLecturerBtn" onclick="switchTab('lecturer')" class="flex-1 py-3 text-center font-medium rounded-lg text-slate-500 hover:text-slate-700 transition-all">
+                🔒 Portal Pensyarah (Kiraan 5% Markah)
+            </button>
+        </div>
+
+        <!-- PORTAL PELAJAR -->
+        <section id="studentSection" class="block space-y-6">
+            <div class="bg-white p-6 rounded-2xl custom-shadow border border-slate-100">
+                <h2 class="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                    <span class="p-2 bg-teal-100 text-teal-700 rounded-lg text-sm">Step 1</span> Maklumat Penilai
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Pilih Nama Anda:</label>
+                        <select id="studentSelect" onchange="onStudentSelected()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-teal-500 transition-all">
+                            <option value="">-- Sila Pilih Nama Anda --</option>
+                        </select>
+                    </div>
+                    <div id="reviewerInfo" class="hidden bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-center">
+                        <p class="text-sm text-slate-600">No. Matrik: <span id="infoMatrik" class="font-semibold text-slate-900"></span></p>
+                        <p class="text-sm text-slate-600 mt-1">Kumpulan Projek: <span id="infoGroup" class="font-bold text-teal-700"></span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Borang Penilaian Dinamik -->
+            <div id="evaluationCard" class="hidden bg-white p-6 rounded-2xl custom-shadow border border-slate-100">
+                <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                    <div>
+                        <h2 class="text-lg font-semibold text-slate-900 flex items-center gap-2">
+                            <span class="p-2 bg-teal-100 text-teal-700 rounded-lg text-sm">Step 2</span> Borang Penilaian Ahli Kumpulan
+                        </h2>
+                        <!-- Pindaan 2: Membuang perkataan tag[cite: 1] -->
+                        <p class="text-xs text-slate-500 mt-1">*Nota: Anda dikehendaki menilai semua ahli kumpulan anda. Penilaian anda adalah sulit.</p>
+                    </div>
+                    <!-- Pindaan 3: Skala 0 ditukar kepada (Tiada Sumbangan) -->
+                    <span class="mt-2 md:mt-0 text-xs bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1 rounded-full font-medium">Skala Markah: 0 (Tiada Sumbangan) hingga 4 (Cemerlang)</span>
+                </div>
+
+                <form id="peerReviewForm" onsubmit="submitReview(event)">
+                    <div id="peerListContainer" class="space-y-8">
+                        <!-- Dijana Secara Dinamik -->
+                    </div>
+
+                    <div class="mt-8 pt-4 border-t border-slate-100 flex justify-end">
+                        <button type="submit" class="bg-gradient-to-r from-teal-600 to-teal-700 text-white font-medium px-8 py-3 rounded-xl hover:from-teal-700 hover:to-teal-800 transition-all shadow-md">
+                            Hantar Penilaian
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- PORTAL PENSYARAH -->
+        <section id="lecturerSection" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl custom-shadow border border-slate-100">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">⚡ Dashboard Pengurusan Pensyarah</h2>
+                        <p class="text-sm text-slate-500 mt-1">Sistem mengira purata markah terkumpul dan wajaran 5% kursus secara automatik.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="clearDatabase()" class="bg-rose-50 border border-rose-200 text-rose-700 font-medium px-4 py-2 rounded-xl text-sm hover:bg-rose-100 transition-all">
+                            🗑️ Reset Data
+                        </button>
+                        <button onclick="exportToCSV()" class="bg-indigo-600 text-white font-medium px-5 py-2 rounded-xl text-sm hover:bg-indigo-700 transition-all shadow-sm">
+                            📥 Muat Turun Data Excel (CSV)
+                        </button>
+                        <button onclick="logoutLecturer()" class="bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-xl text-sm hover:bg-slate-300 transition-all">
+                            🚪 Log Keluar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Rumusan Statistik -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Jumlah Responden Menghantar</p>
+                        <p id="statSubmissions" class="text-2xl font-bold text-slate-900 mt-1">0</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Formula Pemarkahan</p>
+                        <p class="text-sm font-semibold text-teal-700 mt-2">(Purata Skor / 20) × 5%</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Status Kemasukan Fail</p>
+                        <p class="text-sm font-semibold text-emerald-700 mt-2">● 42 Pelajar Aktif Dimuat Naik</p>
+                    </div>
+                </div>
+
+                <!-- Jadual Markah -->
+                <div class="overflow-x-auto border border-slate-100 rounded-xl">
+                    <table class="w-full text-left border-collapse bg-white">
+                        <thead>
+                            <tr class="bg-slate-800 text-white text-xs uppercase tracking-wider font-semibold">
+                                <th class="p-4">Kump.</th>
+                                <th class="p-4">Nama Pelajar</th>
+                                <th class="p-4">No. Matrik</th>
+                                <th class="p-4 text-center">Bilangan Penilai</th>
+                                <th class="p-4 text-center">Purata Skor (Maks 20)</th>
+                                <th class="p-4 text-center bg-teal-900 text-teal-100">Markah Kursus (5%)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lecturerTableBody" class="text-sm divide-y divide-slate-100">
+                            <!-- JS Generated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- POPUP LOGIN BOX (MODAL) -->
+    <div id="loginModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white w-full max-w-md p-6 rounded-2xl shadow-2xl border border-slate-100 transform transition-all">
+            <h3 class="text-lg font-bold text-slate-900 mb-1">🔒 Log Masuk Pensyarah</h3>
+            <p class="text-xs text-slate-500 mb-4">Portal ini dihadkan untuk pensyarah kursus SBEC4343 sahaja.</p>
+            
+            <form onsubmit="verifyLecturerLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Kata Laluan (Password):</label>
+                    <input type="password" id="lecturerPassword" required placeholder="Masukkan kata laluan" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-600">
+                    <p id="loginError" class="text-xs text-rose-600 mt-1 hidden">⚠️ Kata laluan salah! Akses dinafikan.</p>
+                </div>
+                <div class="flex gap-2 justify-end pt-2">
+                    <button type="button" onclick="cancelLogin()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-xl text-sm transition-all">
+                        Batal
+                    </button>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-5 py-2 rounded-xl text-sm transition-all shadow-sm">
+                        Sahkan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        const LECTURER_PASSWORD = "sbec4343lecturer"; 
+        let isLecturerAuthenticated = false;
+
+        // Senarai pemetaan kumpulan pelajar 100% tepat mengikut struktur fail[cite: 3]
+        const studentsData = [
+            // KUMPULAN 1 (6 Orang)[cite: 3]
+            { name: "LIEW KAR LEONG", matrix: "A22BE0127", group: 1 },
+            { name: "TASHNEEM BINTI ZAINAL ABIDIN", matrix: "A22BE0389", group: 1 },
+            { name: "MUHAMMAD AQIL BIN KAMAL ARIFIN", matrix: "B23BE0054", group: 1 },
+            { name: "SITI MARSYA BT KAMAL NAZRI", matrix: "B22BE0086", group: 1 },
+            { name: "MUHAMMAD SYAMIL BIN MT YUSOFF", matrix: "A22BE0211", group: 1 },
+            { name: "NUR AZZA IZZLIYANA BINTI MOHD IZAM", matrix: "A22BE0267", group: 1 },
+            
+            // KUMPULAN 2 (6 Orang)[cite: 3]
+            { name: "EMILY LIONG JIA WEN", matrix: "A22BE0063", group: 2 },
+            { name: "JOSHUA HIEW JUN WEI", matrix: "A22BE0473", group: 2 },
+            { name: "NUR ATIRAH SHAFIKAH BINTI MOHD ASRI", matrix: "A22BE0263", group: 2 },
+            { name: "MUHAMMAD ASHRAF BIN ALI", matrix: "B23BE0055", group: 2 },
+            { name: "MUHAMMAD NADHIR IKHWAN BIN MOHD KHIR TEJERY", matrix: "A22BE0202", group: 2 },
+            { name: "YUSREENA BT MOHD YUSRI", matrix: "B23BE0083", group: 2 },
+            
+            // KUMPULAN 3 (5 Orang)[cite: 3]
+            { name: "EADRIC YII XI HONG", matrix: "A22BE0060", group: 3 },
+            { name: "MOHAMAD HADIF NAJMI BIN MOHAMMAD HOFNI", matrix: "B23BE0045", group: 3 },
+            { name: "NOR MAIZATUL ADILAH BINTI MOHAMAD", matrix: "A22BE0234", group: 3 },
+            { name: "SITI NORSHAHIRA BINTI TAHA", matrix: "A22BE0359", group: 3 },
+            { name: "NAZRUL HAIKAL", matrix: "A21BE0206", group: 3 },
+            
+            // KUMPULAN 4 (5 Orang)[cite: 3]
+            { name: "LEE XIN JIE", matrix: "A22BE0122", group: 4 },
+            { name: "CHAI XIN YI", matrix: "A22BE0042", group: 4 },
+            { name: "MUHAMMAD ZUHYR BIN BASRI", matrix: "B23BE0065", group: 4 },
+            { name: "MAZWAN A/L MAZLAN", matrix: "A22BE0141", group: 4 },
+            { name: "MUHAMMAD DANIAL BIN MOHD ROSLAN", matrix: "A22BE0181", group: 4 },
+            
+            // KUMPULAN 5 (5 Orang)[cite: 3]
+            { name: "CHANG HUI YIN", matrix: "A22BE0044", group: 5 },
+            { name: "AFIQ SYAZWAN BIN MOHD ADZRUL", matrix: "B23BE0024", group: 5 },
+            { name: "MUHAMMAD ZULHELMY BIN WADIRAN", matrix: "A22BE0215", group: 5 },
+            { name: "MUHAMMAD AKRAM BIN MOHD ASRI", matrix: "A22BE0166", group: 5 },
+            { name: "REFANI BINTI ISMAIL", matrix: "A22BE0341", group: 5 },
+            
+            // KUMPULAN 6 (5 Orang)[cite: 3]
+            { name: "NURUL WAHIDA BINTI KAMARUDZAMAN", matrix: "A22BE0331", group: 6 },
+            { name: "SITI NURASMIDAR BINTI YAHYA", matrix: "A22BE0362", group: 6 },
+            { name: "MUHAMMAD LUQMAN NURHAKIM BIN SHAMSUDIN", matrix: "B22BE0220", group: 6 },
+            { name: "TERRANCE NAWE ANAK MEDAN", matrix: "A22BE0395", group: 6 },
+            { name: "SITI NORHIDAYAH IZZATI BINTI ZULKIFLI", matrix: "A22BE0358", group: 6 },
+            
+            // KUMPULAN 7 (5 Orang)[cite: 3]
+            { name: "MUHAMMAD HAZIM SHAH BIN MOHD NADZMI", matrix: "B23BE0057", group: 7 },
+            { name: "MUHAMMAD ASHRIEZAL BIN ANUAR", matrix: "A22BE0176", group: 7 },
+            { name: "DIVYAA A/P THIRUTHAMALAI", matrix: "A22BE0058", group: 7 },
+            { name: "MUHAMMAD ALIFF HAIQAL BIN SAFIE", matrix: "A22BE0170", group: 7 },
+            { name: "NOR NADIA BT ABDULLAH", matrix: "A22BE0235", group: 7 },
+            
+            // KUMPULAN 8 (5 Orang)[cite: 3]
+            { name: "CHEW JIUN TAT", matrix: "A22BE0045", group: 8 },
+            { name: "IRFAN ASLAM BIN MD ZAKI", matrix: "B23BE0034", group: 8 },
+            { name: "DAYANG AMIRAH ZULAIKAH", matrix: "A22BE0056", group: 8 },
+            { name: "SIOW YI HEN", matrix: "A22BE0352", group: 8 },
+            { name: "ROSLIN IZATUL FARHANAH BT ROSMAN", matrix: "B23BE0079", group: 8 }
+        ];
+
+        // Pindaan 4: Menukar kekunci daripada 'Time Mgmt' kepada 'Time Management'[cite: 1]
+        const criteriaList = [
+            { key: "part", label: "Participation", desc: "Terlibat sepenuhnya & aktif menyumbang tenaga.[cite: 1]" },
+            { key: "lead", label: "Leadership", desc: "Membantu mengekalkan fokus & sikap positif kumpulan.[cite: 1]" },
+            { key: "feed", label: "Feedback", desc: "Menawarkan maklum balas membina & berguna.[cite: 1]" },
+            { key: "coop", label: "Cooperation", desc: "Menghormati ahli lain & kongsi beban kerja adil.[cite: 1]" },
+            { key: "time", label: "Time Management", desc: "Menyiapkan tugasan yang diberikan tepat pada masa.[cite: 1]" }
+        ];
+
+        let reviewDatabase = JSON.parse(localStorage.getItem("sbec4343_peer_reviews")) || [];
+
+        window.onload = function() {
+            const selectEl = document.getElementById("studentSelect");
+            const sortedStudents = [...studentsData].sort((a,b) => a.name.localeCompare(b.name));
+            sortedStudents.forEach(student => {
+                let opt = document.createElement("option");
+                opt.value = student.name;
+                opt.textContent = `${student.name} (${student.matrix})`;
+                selectEl.appendChild(opt);
+            });
+        };
+
+        function switchTab(tab) {
+            const studentSec = document.getElementById("studentSection");
+            const lecturerSec = document.getElementById("lecturerSection");
+            const tabStudentBtn = document.getElementById("tabStudentBtn");
+            const tabLecturerBtn = document.getElementById("tabLecturerBtn");
+
+            if (tab === 'student') {
+                studentSec.classList.replace("hidden", "block");
+                lecturerSec.classList.replace("block", "hidden");
+                tabStudentBtn.className = "flex-1 py-3 text-center font-medium rounded-lg text-teal-700 bg-teal-50 border-b-2 border-teal-600 transition-all";
+                tabLecturerBtn.className = "flex-1 py-3 text-center font-medium rounded-lg text-slate-500 hover:text-slate-700 transition-all";
+            } else {
+                if (isLecturerAuthenticated) {
+                    showLecturerDashboard();
+                } else {
+                    document.getElementById("loginModal").classList.remove("hidden");
+                }
+            }
+        }
+
+        function verifyLecturerLogin(event) {
+            event.preventDefault();
+            const enteredPassword = document.getElementById("lecturerPassword").value;
+            const errorMsg = document.getElementById("loginError");
+
+            if (enteredPassword === LECTURER_PASSWORD) {
+                isLecturerAuthenticated = true;
+                errorMsg.classList.add("hidden");
+                document.getElementById("lecturerPassword").value = "";
+                document.getElementById("loginModal").classList.add("hidden");
+                showLecturerDashboard();
+            } else {
+                errorMsg.classList.remove("hidden");
+                isLecturerAuthenticated = false;
+            }
+        }
+
+        function cancelLogin() {
+            document.getElementById("loginModal").classList.add("hidden");
+            switchTab('student');
+        }
+
+        function logoutLecturer() {
+            isLecturerAuthenticated = false;
+            alert("Anda telah log keluar dari Portal Pensyarah.");
+            switchTab('student');
+        }
+
+        function showLecturerDashboard() {
+            const studentSec = document.getElementById("studentSection");
+            const lecturerSec = document.getElementById("lecturerSection");
+            const tabStudentBtn = document.getElementById("tabStudentBtn");
+            const tabLecturerBtn = document.getElementById("tabLecturerBtn");
+
+            studentSec.classList.replace("block", "hidden");
+            lecturerSec.classList.replace("hidden", "block");
+            tabLecturerBtn.className = "flex-1 py-3 text-center font-medium rounded-lg text-teal-700 bg-teal-50 border-b-2 border-teal-600 transition-all";
+            tabStudentBtn.className = "flex-1 py-3 text-center font-medium rounded-lg text-slate-500 hover:text-slate-700 transition-all";
+            renderLecturerDashboard();
+        }
+
+        function onStudentSelected() {
+            const selectedName = document.getElementById("studentSelect").value;
+            const infoCard = document.getElementById("reviewerInfo");
+            const evalCard = document.getElementById("evaluationCard");
+            const listContainer = document.getElementById("peerListContainer");
+
+            if (!selectedName) {
+                infoCard.classList.add("hidden");
+                evalCard.classList.add("hidden");
+                return;
+            }
+
+            const currentStudent = studentsData.find(s => s.name === selectedName);
+            document.getElementById("infoMatrik").textContent = currentStudent.matrix;
+            document.getElementById("infoGroup").textContent = `Kumpulan ${currentStudent.group}`;
+            infoCard.classList.remove("hidden");
+
+            const peers = studentsData.filter(s => s.group === currentStudent.group && s.name !== currentStudent.name);
+            listContainer.innerHTML = "";
+            
+            peers.forEach(peer => {
+                let peerDiv = document.createElement("div");
+                peerDiv.className = "bg-slate-50 p-5 rounded-xl border border-slate-200/80";
+                let htmlContent = `
+                    <div class="mb-4">
+                        <h3 class="text-base font-bold text-indigo-900">${peer.name}</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">No. Matrik: ${peer.matrix}</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">`;
+
+                criteriaList.forEach(crit => {
+                    // Pindaan 3 & 5: Skala 0 diperbetulkan, pilihan default ditukar kepada nilai kosong bertulis "Isikan penilaian anda"
+                    htmlContent += `
+                        <div class="bg-white p-3 rounded-lg border border-slate-200/60 shadow-sm">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1" title="${crit.desc}">${crit.label}</label>
+                            <select name="score_${peer.matrix}_${crit.key}" required class="w-full bg-slate-50 border border-slate-200 rounded-md p-1.5 text-sm focus:outline-none focus:border-teal-500">
+                                <option value="" disabled selected>Isikan penilaian anda</option>
+                                <option value="4">4 - Cemerlang</option>
+                                <option value="3">3 - Baik</option>
+                                <option value="2">2 - Memuaskan</option>
+                                <option value="1">1 - Lemah</option>
+                                <option value="0">0 - Tiada Sumbangan</option>
+                            </select>
+                        </div>`;
+                });
+
+                htmlContent += `</div>`;
+                peerDiv.innerHTML = htmlContent;
+                listContainer.appendChild(peerDiv);
+            });
+            evalCard.classList.remove("hidden");
+        }
+
+        function submitReview(event) {
+            event.preventDefault();
+            const reviewerName = document.getElementById("studentSelect").value;
+            const reviewer = studentsData.find(s => s.name === reviewerName);
+            const peers = studentsData.filter(s => s.group === reviewer.group && s.name !== reviewer.name);
+
+            // Semakan sekiranya ada dropdown yang belum diisi oleh pelajar
+            let incomplete = false;
+            peers.forEach(peer => {
+                criteriaList.forEach(crit => {
+                    let selectEl = document.querySelector(`[name="score_${peer.matrix}_${crit.key}"]`);
+                    if (!selectEl.value) {
+                        incomplete = true;
+                    }
+                });
+            });
+
+            if (incomplete) {
+                alert("⚠️ Sila pastikan anda mengisi penilaian untuk semua kriteria bagi setiap rakan sekumpulan sebelum menghantar.");
+                return;
+            }
+
+            reviewDatabase = reviewDatabase.filter(r => r.reviewerMatrix !== reviewer.matrix);
+
+            peers.forEach(peer => {
+                let peerScores = {
+                    reviewerName: reviewer.name,
+                    reviewerMatrix: reviewer.matrix,
+                    group: reviewer.group,
+                    peerName: peer.name,
+                    peerMatrix: peer.matrix,
+                    scores: {},
+                    totalScore: 0
+                };
+
+                let total = 0;
+                criteriaList.forEach(crit => {
+                    let val = parseInt(document.querySelector(`[name="score_${peer.matrix}_${crit.key}"]`).value);
+                    peerScores.scores[crit.key] = val;
+                    total += val;
+                });
+                peerScores.totalScore = total;
+                reviewDatabase.push(peerScores);
+            });
+
+            localStorage.setItem("sbec4343_peer_reviews", JSON.stringify(reviewDatabase));
+            alert("🎉 Penilaian anda berjaya dihantar!");
+            document.getElementById("studentSelect").value = "";
+            document.getElementById("reviewerInfo").classList.add("hidden");
+            document.getElementById("evaluationCard").classList.add("hidden");
+        }
+
+        function renderLecturerDashboard() {
+            const tbody = document.getElementById("lecturerTableBody");
+            tbody.innerHTML = "";
+
+            const uniqueReviewers = [...new Set(reviewDatabase.map(r => r.reviewerMatrix))];
+            document.getElementById("statSubmissions").textContent = uniqueReviewers.length;
+
+            const sortedDashboardData = [...studentsData].sort((a, b) => a.group - b.group);
+
+            sortedDashboardData.forEach(student => {
+                const reviewsReceived = reviewDatabase.filter(r => r.peerMatrix === student.matrix);
+                const count = reviewsReceived.length;
+                let avgScore = 0;
+                let finalPercentage = 0;
+
+                if (count > 0) {
+                    let sumScore = reviewsReceived.reduce((acc, curr) => acc + curr.totalScore, 0);
+                    avgScore = sumScore / count;
+                    finalPercentage = (avgScore / 20) * 5;
+                }
+
+                let tr = document.createElement("tr");
+                tr.className = "hover:bg-slate-50 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-4 font-medium text-slate-500">${student.group}</td>
+                    <td class="p-4 font-semibold text-slate-900">${student.name}</td>
+                    <td class="p-4 font-mono text-xs text-slate-600">${student.matrix}</td>
+                    <td class="p-4 text-center font-medium">${count} rakan</td>
+                    <td class="p-4 text-center text-slate-700 font-mono">${avgScore.toFixed(2)}</td>
+                    <td class="p-4 text-center font-bold bg-teal-50/50 text-teal-800 font-mono">${finalPercentage.toFixed(2)}%</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function clearDatabase() {
+            if(confirm("Adakah anda pasti mahu memadam semua data penilaian pelajar?")) {
+                localStorage.removeItem("sbec4343_peer_reviews");
+                reviewDatabase = [];
+                renderLecturerDashboard();
+                alert("Data dibersihkan.");
+            }
+        }
+
+        // Fungsi eksport kekal dinamik & menyokong CSV struktur master list
+        function exportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Kumpulan,Nama Pelajar,No. Matrik,Bilangan Penilai,Purata Skor (Max 20),Markah Akhir Peer Review (5%)\n";
+
+            studentsData.forEach(student => {
+                const reviewsReceived = reviewDatabase.filter(r => r.peerMatrix === student.matrix);
+                const count = reviewsReceived.length;
+                let avgScore = 0;
+                let finalPercentage = 0;
+
+                if (count > 0) {
+                    let sumScore = reviewsReceived.reduce((acc, curr) => acc + curr.totalScore, 0);
+                    avgScore = sumScore / count;
+                    finalPercentage = (avgScore / 20) * 5;
+                }
+                csvContent += `${student.group},"${student.name}",${student.matrix},${count},${avgScore.toFixed(2)},${finalPercentage.toFixed(2)}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Markah_Peer_Review_SBEC4343.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
