@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PRISMS - Peer Review & Integrated Scoring Management System</title>
-    <!-- Tailwind CSS untuk reka bentuk premium -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .custom-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 10px -1px rgba(0, 0, 0, 0.03); }
@@ -16,8 +16,7 @@
         <!-- Header Section -->
         <header class="bg-gradient-to-r from-teal-700 to-indigo-800 text-white py-8 px-6 text-center custom-shadow">
             <h1 class="text-2xl md:text-3xl font-bold tracking-wide">SBEC4343 Project Planning and Implementation</h1>
-            <!-- Pindaan: Kemaskini nama aplikasi rasmi kepada PRISMS -->
-            <p class="text-teal-100 mt-2 text-sm md:text-base font-medium tracking-normal">PRISMS (Peer Review and Integrated Scoring Management System for Group Project Assessment)</p>
+            <p class="text-teal-100 mt-2 text-sm md:text-base font-medium">PRISMS (Peer Review and Integrated Scoring Management System for Group Project Assessment)</p>
         </header>
 
         <main class="max-w-6xl mx-auto mt-8 px-4">
@@ -46,11 +45,10 @@
                             </select>
                         </div>
                         
-                        <!-- Pengesahan Menggunakan No Matrik Sendiri -->
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-center">
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Masukkan No. Matrik Anda (Huruf Besar):</label>
                             <div class="flex gap-2">
-                                <input type="text" id="studentMatrixInput" placeholder="Contoh: A22BE0127" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500 uppercase">
+                                <input type="text" id="studentMatrixInput" placeholder="Contoh: A22BE0127" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none uppercase">
                                 <button onclick="verifyStudentIdentity()" class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-all">Sahkan</button>
                             </div>
                             <p id="studentAuthError" class="text-xs text-rose-600 mt-1 hidden"></p>
@@ -76,7 +74,7 @@
                         </div>
 
                         <div class="mt-8 pt-4 border-t border-slate-100 flex justify-end">
-                            <button type="submit" class="bg-gradient-to-r from-teal-600 to-teal-700 text-white font-medium px-8 py-3 rounded-xl hover:from-teal-700 hover:to-teal-800 transition-all shadow-md">
+                            <button id="submitBtn" type="submit" class="bg-gradient-to-r from-teal-600 to-teal-700 text-white font-medium px-8 py-3 rounded-xl hover:from-teal-700 hover:to-teal-800 transition-all shadow-md">
                                 Hantar Penilaian
                             </button>
                         </div>
@@ -90,11 +88,11 @@
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                         <div>
                             <h2 class="text-xl font-bold text-slate-900">⚡ Dashboard Pengurusan Pensyarah</h2>
-                            <p class="text-sm text-slate-500 mt-1">Sistem mengira purata markah terkumpul dan wajaran 5% kursus secara automatik.</p>
+                            <p class="text-sm text-slate-500 mt-1">Sistem mengira purata markah terkumpul dan wajaran 5% kursus secara automatik.[cite: 1]</p>
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="clearDatabase()" class="bg-rose-50 border border-rose-200 text-rose-700 font-medium px-4 py-2 rounded-xl text-sm hover:bg-rose-100 transition-all">🗑️ Reset Data</button>
-                            <button onclick="exportToCSV()" class="bg-indigo-600 text-white font-medium px-5 py-2 rounded-xl text-sm hover:bg-indigo-700 transition-all shadow-sm">📥 Muat Turun Data Excel (CSV)</button>
+                            <button onclick="fetchDataFromCloud()" class="bg-emerald-600 text-white font-medium px-4 py-2 rounded-xl text-sm hover:bg-emerald-700 transition-all shadow-sm">🔄 Muat Turun Data Cloud</button>
+                            <button onclick="exportToCSV()" class="bg-indigo-600 text-white font-medium px-5 py-2 rounded-xl text-sm hover:bg-indigo-700 transition-all shadow-sm">📥 Export ke Excel (CSV)</button>
                             <button onclick="logoutLecturer()" class="bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-xl text-sm hover:bg-slate-300 transition-all">🚪 Log Keluar</button>
                         </div>
                     </div>
@@ -108,8 +106,8 @@
                             <p class="text-sm font-semibold text-teal-700 mt-2">(Purata Skor / 20) × 5%</p>
                         </div>
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                            <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Status Kemasukan Fail</p>
-                            <p class="text-sm font-semibold text-emerald-700 mt-2">● 42 Pelajar Aktif Dimuat Naik</p>
+                            <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Pangkalan Data</p>
+                            <p class="text-sm font-semibold text-emerald-700 mt-2">● Connected to Google Sheets API</p>
                         </div>
                     </div>
                     <div class="overflow-x-auto border border-slate-100 rounded-xl">
@@ -137,7 +135,7 @@
         <p>© 2026 UNIVERSITI TEKNOLOGI MALAYSIA. Developed and maintained by Sr Dr Muzani Mustapa</p>
     </footer>
 
-    <!-- POPUP LOGIN BOX LECTURER -->
+    <!-- POPUP LOGIN LECTURER -->
     <div id="loginModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <div class="bg-white w-full max-w-md p-6 rounded-2xl shadow-2xl border border-slate-100">
             <h3 class="text-lg font-bold text-slate-900 mb-1">🔒 Log Masuk Pensyarah</h3>
@@ -155,63 +153,50 @@
     </div>
 
     <script>
+        // 🚨 TAMPAL URL GOOGLE APPS SCRIPT ANDA DI SINI
+        const GOOGLE_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxt1TvDeXHSOHDK5VpHIcW_TkF1v8n0PUcequ7BZX2t3pvAyq4MsNndhGqmRWgrKPxt9A/exec";
         const LECTURER_PASSWORD = "sbec4343lecturer"; 
         let isLecturerAuthenticated = false;
 
-        // Pangkalan data ahli mengikut ketetapan saiz yang betul[cite: 3]
+        // Pangkalan data ahli kumpulan rasmi[cite: 3]
         const studentsData = [
-            // KUMPULAN 1 (6 Orang)[cite: 3]
             { name: "LIEW KAR LEONG", matrix: "A22BE0127", group: 1 },
             { name: "TASHNEEM BINTI ZAINAL ABIDIN", matrix: "A22BE0389", group: 1 },
             { name: "MUHAMMAD AQIL BIN KAMAL ARIFIN", matrix: "B23BE0054", group: 1 },
             { name: "SITI MARSYA BT KAMAL NAZRI", matrix: "B22BE0086", group: 1 },
             { name: "MUHAMMAD SYAMIL BIN MT YUSOFF", matrix: "A22BE0211", group: 1 },
             { name: "NUR AZZA IZZLIYANA BINTI MOHD IZAM", matrix: "A22BE0267", group: 1 },
-            
-            // KUMPULAN 2 (6 Orang)[cite: 3]
             { name: "EMILY LIONG JIA WEN", matrix: "A22BE0063", group: 2 },
             { name: "JOSHUA HIEW JUN WEI", matrix: "A22BE0473", group: 2 },
             { name: "NUR ATIRAH SHAFIKAH BINTI MOHD ASRI", matrix: "A22BE0263", group: 2 },
             { name: "MUHAMMAD ASHRAF BIN ALI", matrix: "B23BE0055", group: 2 },
             { name: "MUHAMMAD NADHIR IKHWAN BIN MOHD KHIR TEJERY", matrix: "A22BE0202", group: 2 },
             { name: "YUSREENA BT MOHD YUSRI", matrix: "B23BE0083", group: 2 },
-            
-            // KUMPULAN 3 (5 Orang)[cite: 3]
             { name: "EADRIC YII XI HONG", matrix: "A22BE0060", group: 3 },
             { name: "MOHAMAD HADIF NAJMI BIN MOHAMMAD HOFNI", matrix: "B23BE0045", group: 3 },
             { name: "NOR MAIZATUL ADILAH BINTI MOHAMAD", matrix: "A22BE0234", group: 3 },
             { name: "SITI NORSHAHIRA BINTI TAHA", matrix: "A22BE0359", group: 3 },
             { name: "NAZRUL HAIKAL", matrix: "A21BE0206", group: 3 },
-            
-            // KUMPULAN 4 (5 Orang)[cite: 3]
             { name: "LEE XIN JIE", matrix: "A22BE0122", group: 4 },
             { name: "CHAI XIN YI", matrix: "A22BE0042", group: 4 },
             { name: "MUHAMMAD ZUHYR BIN BASRI", matrix: "B23BE0065", group: 4 },
             { name: "MAZWAN A/L MAZLAN", matrix: "A22BE0141", group: 4 },
             { name: "MUHAMMAD DANIAL BIN MOHD ROSLAN", matrix: "A22BE0181", group: 4 },
-            
-            // KUMPULAN 5 (5 Orang)[cite: 3]
             { name: "CHANG HUI YIN", matrix: "A22BE0044", group: 5 },
             { name: "AFIQ SYAZWAN BIN MOHD ADZRUL", matrix: "B23BE0024", group: 5 },
             { name: "MUHAMMAD ZULHELMY BIN WADIRAN", matrix: "A22BE0215", group: 5 },
             { name: "MUHAMMAD AKRAM BIN MOHD ASRI", matrix: "A22BE0166", group: 5 },
             { name: "REFANI BINTI ISMAIL", matrix: "A22BE0341", group: 5 },
-            
-            // KUMPULAN 6 (5 Orang)[cite: 3]
             { name: "NURUL WAHIDA BINTI KAMARUDZAMAN", matrix: "A22BE0331", group: 6 },
             { name: "SITI NURASMIDAR BINTI YAHYA", matrix: "A22BE0362", group: 6 },
             { name: "MUHAMMAD LUQMAN NURHAKIM BIN SHAMSUDIN", matrix: "B22BE0220", group: 6 },
             { name: "TERRANCE NAWE ANAK MEDAN", matrix: "A22BE0395", group: 6 },
             { name: "SITI NORHIDAYAH IZZATI BINTI ZULKIFLI", matrix: "A22BE0358", group: 6 },
-            
-            // KUMPULAN 7 (5 Orang)[cite: 3]
             { name: "MUHAMMAD HAZIM SHAH BIN MOHD NADZMI", matrix: "B23BE0057", group: 7 },
             { name: "MUHAMMAD ASHRIEZAL BIN ANUAR", matrix: "A22BE0176", group: 7 },
             { name: "DIVYAA A/P THIRUTHAMALAI", matrix: "A22BE0058", group: 7 },
             { name: "MUHAMMAD ALIFF HAIQAL BIN SAFIE", matrix: "A22BE0170", group: 7 },
             { name: "NOR NADIA BT ABDULLAH", matrix: "A22BE0235", group: 7 },
-            
-            // KUMPULAN 8 (5 Orang)[cite: 3]
             { name: "CHEW JIUN TAT", matrix: "A22BE0045", group: 8 },
             { name: "IRFAN ASLAM BIN MD ZAKI", matrix: "B23BE0034", group: 8 },
             { name: "DAYANG AMIRAH ZULAIKAH", matrix: "A22BE0056", group: 8 },
@@ -227,7 +212,7 @@
             { key: "time", label: "Time Management", desc: "Menyiapkan tugasan yang diberikan tepat pada masa.[cite: 1]" }
         ];
 
-        let reviewDatabase = JSON.parse(localStorage.getItem("sbec4343_peer_reviews")) || [];
+        let cloudReviewsData = [];
 
         window.onload = function() {
             const selectEl = document.getElementById("studentSelect");
@@ -238,6 +223,7 @@
                 opt.textContent = `${student.name}`;
                 selectEl.appendChild(opt);
             });
+            fetchDataFromCloud();
         };
 
         function resetVerification() {
@@ -257,20 +243,13 @@
             }
 
             const currentStudent = studentsData.find(s => s.name === selectedName);
-            const alreadySubmitted = reviewDatabase.some(r => r.reviewerMatrix === currentStudent.matrix);
 
             if (enteredMatrix === currentStudent.matrix) {
-                if (alreadySubmitted) {
-                    errorMsg.className = "text-xs text-rose-600 mt-1 block";
-                    errorMsg.textContent = "⚠️ Borang Disekat! Anda telah pun menghantar penilaian peer review sebelum ini.";
-                    document.getElementById("evaluationCard").classList.add("hidden");
-                } else {
-                    errorMsg.classList.add("hidden");
-                    onStudentVerified(currentStudent);
-                }
+                errorMsg.classList.add("hidden");
+                onStudentVerified(currentStudent);
             } else {
                 errorMsg.className = "text-xs text-rose-600 mt-1 block";
-                errorMsg.textContent = "⚠️ No. Matrik salah! Sila masukkan No. Matrik anda yang betul untuk membuka borang.";
+                errorMsg.textContent = "⚠️ No. Matrik salah! Sila masukkan No. Matrik anda yang betul.";
                 document.getElementById("evaluationCard").classList.add("hidden");
             }
         }
@@ -312,21 +291,20 @@
             document.getElementById("evaluationCard").classList.remove("hidden");
         }
 
-        function submitReview(event) {
+        // HANTAR DATA KE GOOGLE SHEETS
+        async function submitReview(event) {
             event.preventDefault();
+            const submitBtn = document.getElementById("submitBtn");
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Sedang Mengirim ke Cloud...";
+
             const reviewerName = document.getElementById("studentSelect").value;
             const reviewer = studentsData.find(s => s.name === reviewerName);
             const peers = studentsData.filter(s => s.group === reviewer.group && s.name !== reviewer.name);
 
-            if (reviewDatabase.some(r => r.reviewerMatrix === reviewer.matrix)) {
-                alert("Hantaran disekat! Anda sudah mengisi penilaian.");
-                return;
-            }
-
+            let reviewsPayload = [];
             peers.forEach(peer => {
                 let peerScores = {
-                    reviewerName: reviewer.name,
-                    reviewerMatrix: reviewer.matrix,
                     group: reviewer.group,
                     peerName: peer.name,
                     peerMatrix: peer.matrix,
@@ -341,13 +319,58 @@
                     total += val;
                 });
                 peerScores.totalScore = total;
-                reviewDatabase.push(peerScores);
+                reviewsPayload.push(peerScores);
             });
 
-            localStorage.setItem("sbec4343_peer_reviews", JSON.stringify(reviewDatabase));
-            alert("🎉 Penilaian anda berjaya dihantar secara sulit!");
-            document.getElementById("studentSelect").value = "";
-            resetVerification();
+            const payload = {
+                reviewerName: reviewer.name,
+                reviewerMatrix: reviewer.matrix,
+                reviews: reviewsPayload
+            };
+
+            try {
+                // Menghantar melalui Google Webhook
+                await fetch(GOOGLE_WEBHOOK_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Diperlukan untuk Google Apps Script
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                alert("🎉 Penilaian anda berjaya dihantar ke pangkalan data Google Sheets!");
+                document.getElementById("studentSelect").value = "";
+                resetVerification();
+            } catch (err) {
+                alert("⚠️ Gagal menghantar data. Sila semak sambungan internet anda.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Hantar Penilaian";
+            }
+        }
+
+        // MUAT TURUN DATA DARI GOOGLE SHEETS UNTUK DASHBOARD PENSYARAH
+        async function fetchDataFromCloud() {
+            if (GOOGLE_WEBHOOK_URL.includes("PASTE_URL")) return;
+            try {
+                const res = await fetch(GOOGLE_WEBHOOK_URL);
+                const rawData = await res.json();
+                
+                // Process Google Sheets rows
+                cloudReviewsData = [];
+                if (rawData && rawData.length > 1) {
+                    for (let i = 1; i < rawData.length; i++) {
+                        let row = rawData[i];
+                        cloudReviewsData.push({
+                            reviewerMatrix: row[3],
+                            peerMatrix: row[5],
+                            totalScore: parseFloat(row[11])
+                        });
+                    }
+                }
+                renderLecturerDashboard();
+            } catch (e) {
+                console.log("Waiting for data connection...");
+            }
         }
 
         function switchTab(tab) {
@@ -374,25 +397,29 @@
         function showLecturerDashboard() {
             document.getElementById("studentSection").classList.replace("block", "hidden");
             document.getElementById("lecturerSection").classList.replace("hidden", "block");
-            renderLecturerDashboard();
+            fetchDataFromCloud();
         }
         function renderLecturerDashboard() {
             const tbody = document.getElementById("lecturerTableBody");
             tbody.innerHTML = "";
-            document.getElementById("statSubmissions").textContent = [...new Set(reviewDatabase.map(r => r.reviewerMatrix))].length;
+            
+            const uniqueReviewers = [...new Set(cloudReviewsData.map(r => r.reviewerMatrix))];
+            document.getElementById("statSubmissions").textContent = uniqueReviewers.length;
+
             [...studentsData].sort((a,b)=>a.group-b.group).forEach(student => {
-                const reviews = reviewDatabase.filter(r => r.peerMatrix === student.matrix);
-                let avg = 0; if (reviews.length > 0) avg = reviews.reduce((acc,c)=>acc+c.totalScore, 0) / reviews.length;
+                const reviews = cloudReviewsData.filter(r => r.peerMatrix === student.matrix);
+                let avg = 0; 
+                if (reviews.length > 0) avg = reviews.reduce((acc,c)=>acc+c.totalScore, 0) / reviews.length;
+                
                 let tr = document.createElement("tr");
-                tr.innerHTML = `<td class="p-4">${student.group}</td><td class="p-4 font-semibold">${student.name}</td><td class="p-4">${student.matrix}</td><td class="p-4 text-center">${reviews.length}</td><td class="p-4 text-center">${avg.toFixed(2)}</td><td class="p-4 text-center font-bold text-teal-800">${((avg/20)*5).toFixed(2)}%</td>`;
+                tr.innerHTML = `<td class="p-4">${student.group}</td><td class="p-4 font-semibold">${student.name}</td><td class="p-4 font-mono text-xs">${student.matrix}</td><td class="p-4 text-center">${reviews.length}</td><td class="p-4 text-center font-mono">${avg.toFixed(2)}</td><td class="p-4 text-center font-bold text-teal-800 font-mono">${((avg/20)*5).toFixed(2)}%</td>`;
                 tbody.appendChild(tr);
             });
         }
-        function clearDatabase() { if(confirm("Reset semua data?")) { localStorage.removeItem("sbec4343_peer_reviews"); reviewDatabase = []; renderLecturerDashboard(); } }
         function exportToCSV() {
             let csv = "Kumpulan,Nama Pelajar,No. Matrik,Bilangan Penilai,Purata Skor,Markah Akhir (5%)\n";
             studentsData.forEach(s => {
-                const r = reviewDatabase.filter(x => x.peerMatrix === s.matrix);
+                const r = cloudReviewsData.filter(x => x.peerMatrix === s.matrix);
                 let a = r.length > 0 ? r.reduce((acc,c)=>acc+c.totalScore, 0)/r.length : 0;
                 csv += `${s.group},"${s.name}",${s.matrix},${r.length},${a.toFixed(2)},${((a/20)*5).toFixed(2)}\n`;
             });
