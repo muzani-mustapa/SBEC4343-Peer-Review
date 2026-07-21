@@ -49,7 +49,7 @@
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Masukkan No. Matrik Anda (Huruf Besar):</label>
                             <div class="flex gap-2">
                                 <input type="text" id="studentMatrixInput" placeholder="Contoh: A22BE0127" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none uppercase">
-                                <button onclick="verifyStudentIdentity()" class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-all">Sahkan</button>
+                                <button id="verifyBtn" onclick="verifyStudentIdentity()" class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-all">Sahkan</button>
                             </div>
                             <p id="studentAuthError" class="text-xs text-rose-600 mt-1 hidden"></p>
                         </div>
@@ -232,10 +232,12 @@
             document.getElementById("studentAuthError").classList.add("hidden");
         }
 
-        function verifyStudentIdentity() {
+        // SEMAKAN LELAPISAN DUA FAKTOR (MATRIK + REAL-TIME CLOUD CHECK)
+        async function verifyStudentIdentity() {
             const selectedName = document.getElementById("studentSelect").value;
             const enteredMatrix = document.getElementById("studentMatrixInput").value.trim().toUpperCase();
             const errorMsg = document.getElementById("studentAuthError");
+            const verifyBtn = document.getElementById("verifyBtn");
 
             if (!selectedName) {
                 alert("Sila pilih nama anda terlebih dahulu.");
@@ -244,14 +246,51 @@
 
             const currentStudent = studentsData.find(s => s.name === selectedName);
 
-            if (enteredMatrix === currentStudent.matrix) {
-                errorMsg.classList.add("hidden");
-                onStudentVerified(currentStudent);
-            } else {
+            if (enteredMatrix !== currentStudent.matrix) {
                 errorMsg.className = "text-xs text-rose-600 mt-1 block";
                 errorMsg.textContent = "⚠️ No. Matrik salah! Sila masukkan No. Matrik anda yang betul.";
                 document.getElementById("evaluationCard").classList.add("hidden");
+                return;
             }
+
+            // 1. Semakan Lokal (Jika peranti sudah menghantar)
+            let localSubmitted = JSON.parse(localStorage.getItem("prisms_submitted_" + currentStudent.matrix));
+            if (localSubmitted) {
+                errorMsg.className = "text-xs text-rose-600 mt-1 block";
+                errorMsg.textContent = "⚠️ Borang Disekat! Anda telah pun menghantar penilaian peer review sebelum ini dari peranti ini.";
+                document.getElementById("evaluationCard").classList.add("hidden");
+                return;
+            }
+
+            // 2. Semakan Live dari Cloud Google Sheets
+            verifyBtn.disabled = true;
+            verifyBtn.textContent = "Semak...";
+            
+            try {
+                if (!GOOGLE_WEBHOOK_URL.includes("PASTE_URL")) {
+                    const res = await fetch(GOOGLE_WEBHOOK_URL);
+                    const rawData = await res.json();
+                    
+                    if (rawData && rawData.length > 1) {
+                        const hasSubmittedInCloud = rawData.some(row => row[3] === currentStudent.matrix);
+                        if (hasSubmittedInCloud) {
+                            errorMsg.className = "text-xs text-rose-600 mt-1 block";
+                            errorMsg.textContent = "⚠️ Borang Disekat! Rekod menunjukkan anda telah pun menghantar penilaian di dalam pangkalan data.";
+                            document.getElementById("evaluationCard").classList.add("hidden");
+                            verifyBtn.disabled = false;
+                            verifyBtn.textContent = "Sahkan";
+                            return;
+                        }
+                    }
+                }
+            } catch (err) {
+                console.log("Cloud check bypass...");
+            }
+
+            verifyBtn.disabled = false;
+            verifyBtn.textContent = "Sahkan";
+            errorMsg.classList.add("hidden");
+            onStudentVerified(currentStudent);
         }
 
         function onStudentVerified(currentStudent) {
@@ -291,12 +330,11 @@
             document.getElementById("evaluationCard").classList.remove("hidden");
         }
 
-        // HANTAR DATA KE GOOGLE SHEETS
         async function submitReview(event) {
             event.preventDefault();
             const submitBtn = document.getElementById("submitBtn");
             submitBtn.disabled = true;
-            submitBtn.textContent = "Sedang Mengirim ke Cloud...";
+            submitBtn.textContent = "Sedang Mengirim...";
 
             const reviewerName = document.getElementById("studentSelect").value;
             const reviewer = studentsData.find(s => s.name === reviewerName);
@@ -329,15 +367,17 @@
             };
 
             try {
-                // Menghantar melalui Google Webhook
                 await fetch(GOOGLE_WEBHOOK_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // Diperlukan untuk Google Apps Script
+                    mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
-                alert("🎉 Penilaian anda berjaya dihantar ke pangkalan data Google Sheets!");
+                // Tanda (*flag*) dalam local storage peranti bahawa pelajar ini telah menghantar
+                localStorage.setItem("prisms_submitted_" + reviewer.matrix, true);
+
+                alert("🎉 Penilaian anda berjaya dihantar ke pangkalan data!");
                 document.getElementById("studentSelect").value = "";
                 resetVerification();
             } catch (err) {
@@ -348,14 +388,12 @@
             }
         }
 
-        // MUAT TURUN DATA DARI GOOGLE SHEETS UNTUK DASHBOARD PENSYARAH
         async function fetchDataFromCloud() {
             if (GOOGLE_WEBHOOK_URL.includes("PASTE_URL")) return;
             try {
                 const res = await fetch(GOOGLE_WEBHOOK_URL);
                 const rawData = await res.json();
                 
-                // Process Google Sheets rows
                 cloudReviewsData = [];
                 if (rawData && rawData.length > 1) {
                     for (let i = 1; i < rawData.length; i++) {
